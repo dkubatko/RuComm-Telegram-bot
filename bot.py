@@ -90,7 +90,10 @@ class RusMafiaBot:
             self.new_member_notify(context, new_user)
             self.logger.info(logging_settings.NEW_MEMBER_NOTIFIED.format(new_user.display_name, new_user.id))
 
-        context.bot.send_message(chat_id=update.message.chat_id, text = responses.WELCOME_MESSAGE.format(username), parse_mode=ParseMode.HTML)
+        context.bot.send_message(chat_id=update.message.chat_id, 
+                text = responses.WELCOME_MESSAGE.format(username), 
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True)
 
     def command_admin(self, update, context):
         user_id = update.message.from_user.id
