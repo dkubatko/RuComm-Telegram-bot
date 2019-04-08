@@ -76,7 +76,8 @@ EVENT_ENABLE_SUCCESS = "You have enabled event {0}!"
 
 
 # Location
-
+LOCATION_NOT_AVAILABLE = "Location is not available for event {0}"
+LOCATION_REQUIRED = "Your location is required for event {0}. User /location to grant access"
 NO_LOCATION_RECORD = "I don't have access to your location. Use /location to grant access and receive directions to the event location."
 LOCATION_REQUEST = "Would you mind sharing your location?"
 LOCATION_RECEIVED = "Location captured. Thank you!"

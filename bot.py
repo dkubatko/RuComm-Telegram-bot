@@ -535,19 +535,28 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_NOT_GOING.format(num_attendees, event.name))
 
     def show_event_location(self, context, user: User, event: Event):
-        if (not user.fields.get('location', None)):
-            context.bot.send_message(chat_id=user.chat_id, text = responses.NO_LOCATION_RECORD)
+        # Get event organizer
+        organizer = self.db_driver.get_user(event.organizer_id)
+
+        if (organizer is None):
+            context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_NOT_AVAILABLE.format(event.name))
+            return
+
+        if (not organizer.fields.get('location', None)):
+            context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_NOT_AVAILABLE.format(event.name))
+            # Notify organizer
+            context.bot.send_message(chat_id=organizer.chat_id, text = responses.LOCATION_REQUIRED.format(event.name))
             return
         
         # If location exists
         try:
-            location = event.find_location(user_location=user.fields.get('location', None))
+            location = event.find_location(user_location=organizer.fields.get('location', None))
+            context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_FOR_EVENT.format(event.name))
+            context.bot.send_location(chat_id=user.chat_id, latitude=location['lat'], longitude=location['lng'])
         except Exception as e:
+            context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_NOT_AVAILABLE.format(event.name))
             print(e)
             traceback.print_tb(e.__traceback__)
-
-        context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_FOR_EVENT.format(event.name))
-        context.bot.send_location(chat_id=user.chat_id, latitude=location['lat'], longitude=location['lng'])
 
     def show_event(self, context, event: Event, user: User, chat_id):
         # Add location keyboard button
