@@ -45,4 +45,8 @@ EVENT_ENABLED = "User <{0}> with id <{1}> enabled event <{2}>"
 
 LOCATION_RECEIVED = "User <{0}> with id <{1}> has shared their location"
 
+NO_ORGANIZER_FOR_EVENT = "No organizer record for event <{0}> with id <{1}>"
+
+NO_ORGANIZER_LOCATION = "No location record for event <{0}> with id <{1}> organizer <{2}> with id <{3}>"
+
 NEW_MEMBER_NOTIFIED = "Notified all users about new member <{0}> with id <{1}>"

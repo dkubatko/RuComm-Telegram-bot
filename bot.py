@@ -540,12 +540,17 @@ class RusMafiaBot:
 
         if (organizer is None):
             context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_NOT_AVAILABLE.format(event.name))
+            
+            self.logger.info(logging_settings.NO_ORGANIZER_FOR_EVENT.format(event.name, event.id))
             return
 
         if (not organizer.fields.get('location', None)):
             context.bot.send_message(chat_id=user.chat_id, text = responses.LOCATION_NOT_AVAILABLE.format(event.name))
             # Notify organizer
             context.bot.send_message(chat_id=organizer.chat_id, text = responses.LOCATION_REQUIRED.format(event.name))
+
+            self.logger.info(logging_settings.NO_ORGANIZER_LOCATION.format(event.name, event.id, 
+                        organizer.display_name, organizer.id))
             return
         
         # If location exists
