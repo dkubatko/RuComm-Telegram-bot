@@ -414,8 +414,8 @@ class RusMafiaBot:
 
         for user in users:
             print(user.display_name)
-            if (user.id == init_user.id):
-                continue
+            # if (user.id == init_user.id):
+                # continue
                 
             chat_id = user.chat_id
 
