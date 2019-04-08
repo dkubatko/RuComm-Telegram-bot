@@ -7,7 +7,8 @@ import settings
 class Event:
     def __init__(self, id = None, name = None, time = None, 
                     location = None, description = None, 
-                    ongoing = True, organizer = None, **kwargs):
+                    ongoing = True, organizer = None, 
+                    organizer_id = None, **kwargs):
         # generate id if not specified
 
         self.id = id
@@ -21,6 +22,7 @@ class Event:
         self.description = description
         self.ongoing = ongoing
         self.organizer = organizer
+        self.organizer_id = organizer_id
 
         self.fields = {}
 
@@ -36,7 +38,8 @@ class Event:
             'location': self.location,
             'description': self.description,
             'ongoing': self.ongoing,
-            'organizer_id': self.organizer
+            'organizer': self.organizer,
+            'organizer_id': self.organizer_id
         }
         obj.update(self.fields)
         return obj

@@ -141,7 +141,9 @@ class RusMafiaBot:
         if state is None:
             state = 'event_create_start'
             user.fields['state'] = state
-            user.fields['new_event'] = Event().to_json()
+            # start creating a new event with organizer's data
+            user.fields['new_event'] = Event(organizer=user.display_name, 
+                            organizer_id=user.id).to_json()
             self.db_driver.update_user(user)
         
         self.handle_state(update, context, user)
