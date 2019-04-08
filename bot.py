@@ -392,6 +392,9 @@ class RusMafiaBot:
             event_id = action.split('_')[-1]
             self.event_enable(context, user, self.db_driver.get_event(event_id), message_id)
             return
+        elif ('event_attendees' in action):
+            event_id = action.split('_')[-1]
+            self.event_attendees(context, user, self.db_driver.get_event(event_id))
         
 
         self.db_driver.update_user(user)
@@ -453,6 +456,23 @@ class RusMafiaBot:
             message_id=message_id, reply_markup = reply_markup)
 
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_ENABLE_SUCCESS.format(event.name))
+    
+    def event_attendees(self, context, user: User, event: Event):
+        # Get attendee list
+        attendees = self.get_event_attendees(event)
+        
+        response = responses.EVENT_ATTENDEE_LIST.format(event.name)
+
+        for attendee in attendees:
+            name = responses.EVENT_ATTENDEE.format(attendee.display_name)
+
+            if attendee.display_name is None:
+                name = responses.EVENT_ATTENDEE_NO_USERNAME.format(attendee.id)
+
+            response += name
+        
+        context.bot.send_message(chat_id=user.chat_id, text = response)
+        
     
     def event_going(self, context, user: User, event: Event, message_id):
         # add to the list of going-to events if wasn't already
@@ -528,6 +548,8 @@ class RusMafiaBot:
         if (user.admin):
             keyboard = [[InlineKeyboardButton("Notify!", 
                     callback_data='event_notify_' + event.id)],
+                    [InlineKeyboardButton("Attendees",
+                    callback_data='event_attendees_' + event.id)],
                     [InlineKeyboardButton("Disable",
                     callback_data='event_disable_' + event.id)],
                     [location_button]]

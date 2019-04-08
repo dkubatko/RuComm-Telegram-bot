@@ -83,3 +83,7 @@ LOCATION_FOR_EVENT = "This is the location for event {0}:"
 
 
 # Attendees string builder
+
+EVENT_ATTENDEE_LIST = "Here are {0} attendees for event {1}:\n"
+EVENT_ATTENDEE = "@{0}\n"
+EVENT_ATTENDEE_NO_USERNAME = "No display name, id: {0}\n"
