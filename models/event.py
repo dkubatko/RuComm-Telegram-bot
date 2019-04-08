@@ -76,7 +76,7 @@ class Event:
             self.location,
             self.description,
             self.fields.get('google_calendar_url', ''),
-            self.organizer_id
+            self.organizer
         )
 
     def find_location(self, user_location):
