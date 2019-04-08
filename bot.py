@@ -414,6 +414,8 @@ class RusMafiaBot:
                 continue
                 
             chat_id = user.chat_id
+
+            context.bot.send_message(chat_id=chat_id, text = responses.EVENT_NOTIFICATION.format(init_user.display_name))
             self.show_event(context, event, user, chat_id)
 
             self.logger.info(logging_settings.EVENT_NOTIFY.format(user.display_name, user.id, event.name))
@@ -667,7 +669,7 @@ class RusMafiaBot:
     def new_member_notify(self, context, user: User):
         users = self.db_driver.get_all_users()
         # remove self
-        # users.remove(user)
+        users.remove(user)
 
         for u in users:
             context.bot.send_message(chat_id=u.chat_id, text = responses.NEW_USER_JOINED.format(user.display_name))

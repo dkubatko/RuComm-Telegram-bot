@@ -74,7 +74,6 @@ EVENT_NOTIFICATION_SUCCESS = "Notified everyone about event {0}!"
 EVENT_DISABLE_SUCCESS = "You have disabled event {0}"
 EVENT_ENABLE_SUCCESS = "You have enabled event {0}!"
 
-
 # Location
 LOCATION_NOT_AVAILABLE = "Location is not available for event {0}"
 LOCATION_REQUIRED = "Your location is required for event {0}.\nUse /location to grant access"
@@ -90,3 +89,7 @@ EVENT_ATTENDEE_LIST = "Here are {0} attendees for event {1}:\n"
 EVENT_NO_ATTENDEES = "There are no attendees for event {0}"
 EVENT_ATTENDEE = "@{0}\n"
 EVENT_ATTENDEE_NO_USERNAME = "No display name, id: {0}\n"
+
+
+# Notifications
+EVENT_NOTIFICATION = "@{0} notified everyone about the following event:"
