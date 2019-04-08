@@ -476,6 +476,9 @@ class RusMafiaBot:
 
             response += name
         
+        if (len(attendees) == 0):
+            response = responses.EVENT_NO_ATTENDEES.format(event.name)
+        
         context.bot.send_message(chat_id=user.chat_id, text = response)
         
     
