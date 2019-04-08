@@ -312,6 +312,10 @@ class RusMafiaBot:
         # Clear user's state and data
         user.fields['state'] = None
         user.fields['new_event'] = None
+        
+        # Add event to the creator user events
+        user.events.append(e.id)
+
         self.db_driver.update_user(user)
 
     def create_event_cancel(self, update, context, user):
@@ -459,24 +463,20 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_ENABLE_SUCCESS.format(event.name))
     
     def event_attendees(self, context, user: User, event: Event):
-        try:
-            # Get attendee list
-            attendees = self.get_event_attendees(event)
-            
-            response = responses.EVENT_ATTENDEE_LIST.format(len(attendees), event.name)
+        # Get attendee list
+        attendees = self.get_event_attendees(event)
+        
+        response = responses.EVENT_ATTENDEE_LIST.format(len(attendees), event.name)
 
-            for attendee in attendees:
-                name = responses.EVENT_ATTENDEE.format(attendee.display_name)
+        for attendee in attendees:
+            name = responses.EVENT_ATTENDEE.format(attendee.display_name)
 
-                if attendee.display_name is None:
-                    name = responses.EVENT_ATTENDEE_NO_USERNAME.format(attendee.id)
+            if attendee.display_name is None:
+                name = responses.EVENT_ATTENDEE_NO_USERNAME.format(attendee.id)
 
-                response += name
-            
-            context.bot.send_message(chat_id=user.chat_id, text = response)
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+            response += name
+        
+        context.bot.send_message(chat_id=user.chat_id, text = response)
         
     
     def event_going(self, context, user: User, event: Event, message_id):

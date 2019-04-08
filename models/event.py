@@ -7,7 +7,7 @@ import settings
 class Event:
     def __init__(self, id = None, name = None, time = None, 
                     location = None, description = None, 
-                    ongoing = True, **kwargs):
+                    ongoing = True, organizer = None, **kwargs):
         # generate id if not specified
 
         self.id = id
@@ -20,6 +20,7 @@ class Event:
         self.location = location
         self.description = description
         self.ongoing = ongoing
+        self.organizer = organizer
 
         self.fields = {}
 
@@ -34,7 +35,8 @@ class Event:
             'time': self.time,
             'location': self.location,
             'description': self.description,
-            'ongoing': self.ongoing
+            'ongoing': self.ongoing,
+            'organizer_id': self.organizer
         }
         obj.update(self.fields)
         return obj
@@ -73,7 +75,8 @@ class Event:
             self.time,
             self.location,
             self.description,
-            self.fields.get('google_calendar_url', '')
+            self.fields.get('google_calendar_url', ''),
+            self.organizer_id
         )
 
     def find_location(self, user_location):

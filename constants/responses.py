@@ -40,6 +40,7 @@ EVENT = '''
 <b>Where:</b> {2}
 <b>What:</b> {3}
 <b>Google Calendar:</b> <a href='{4}'>link</a>
+<b>Organizer:</b> @{5}
 '''
 
 COMMAND_CANCELED = "Okay, rolling back..."
