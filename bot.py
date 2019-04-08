@@ -407,15 +407,11 @@ class RusMafiaBot:
         self.db_driver.update_user(user)
 
     def event_notify(self, context, init_user: User, event: Event):
-        # users = self.db_driver.get_all_users()
-        users = [init_user]
-
-        print("adadsa")
+        users = self.db_driver.get_all_users()
 
         for user in users:
-            print(user.display_name)
-            # if (user.id == init_user.id):
-                # continue
+            if (user.id == init_user.id):
+                continue
                 
             chat_id = user.chat_id
 
