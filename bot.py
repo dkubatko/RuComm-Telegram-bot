@@ -463,7 +463,7 @@ class RusMafiaBot:
             # Get attendee list
             attendees = self.get_event_attendees(event)
             
-            response = responses.EVENT_ATTENDEE_LIST.format(event.name)
+            response = responses.EVENT_ATTENDEE_LIST.format(len(attendees), event.name)
 
             for attendee in attendees:
                 name = responses.EVENT_ATTENDEE.format(attendee.display_name)
