@@ -459,20 +459,24 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_ENABLE_SUCCESS.format(event.name))
     
     def event_attendees(self, context, user: User, event: Event):
-        # Get attendee list
-        attendees = self.get_event_attendees(event)
-        
-        response = responses.EVENT_ATTENDEE_LIST.format(event.name)
+        try:
+            # Get attendee list
+            attendees = self.get_event_attendees(event)
+            
+            response = responses.EVENT_ATTENDEE_LIST.format(event.name)
 
-        for attendee in attendees:
-            name = responses.EVENT_ATTENDEE.format(attendee.display_name)
+            for attendee in attendees:
+                name = responses.EVENT_ATTENDEE.format(attendee.display_name)
 
-            if attendee.display_name is None:
-                name = responses.EVENT_ATTENDEE_NO_USERNAME.format(attendee.id)
+                if attendee.display_name is None:
+                    name = responses.EVENT_ATTENDEE_NO_USERNAME.format(attendee.id)
 
-            response += name
-        
-        context.bot.send_message(chat_id=user.chat_id, text = response)
+                response += name
+            
+            context.bot.send_message(chat_id=user.chat_id, text = response)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
         
     
     def event_going(self, context, user: User, event: Event, message_id):
