@@ -395,6 +395,7 @@ class RusMafiaBot:
         elif ('event_attendees' in action):
             event_id = action.split('_')[-1]
             self.event_attendees(context, user, self.db_driver.get_event(event_id))
+            return
         
 
         self.db_driver.update_user(user)
