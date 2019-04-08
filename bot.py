@@ -410,7 +410,10 @@ class RusMafiaBot:
         # users = self.db_driver.get_all_users()
         users = [init_user]
 
+        print("adadsa")
+
         for user in users:
+            print(user.display_name)
             if (user.id == init_user.id):
                 continue
                 
