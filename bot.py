@@ -467,8 +467,8 @@ class RusMafiaBot:
         # Change reply markup to reflect the change
         location_button = InlineKeyboardButton("Location",
                 callback_data="event_location_" + event.id)
-        keyboard = [[InlineKeyboardButton("Notify!", 
-                    callback_data='event_notify_' + event.id)],
+        keyboard = [[InlineKeyboardButton("Attendees",
+                    callback_data='event_attendees_' + event.id)],
                     [InlineKeyboardButton("Enable",
                     callback_data='event_enable_' + event.id)],
                     [location_button]]
@@ -491,6 +491,8 @@ class RusMafiaBot:
                 callback_data="event_location_" + event.id)
         keyboard = [[InlineKeyboardButton("Notify!", 
                     callback_data='event_notify_' + event.id)],
+                    [InlineKeyboardButton("Attendees",
+                    callback_data='event_attendees_' + event.id)],
                     [InlineKeyboardButton("Disable",
                     callback_data='event_disable_' + event.id)],
                     [location_button]]
