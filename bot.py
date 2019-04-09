@@ -668,11 +668,11 @@ class RusMafiaBot:
 
     def new_member_notify(self, context, user: User):
         users = self.db_driver.get_all_users()
-        # remove self
-        users.remove(user)
 
         for u in users:
-            context.bot.send_message(chat_id=u.chat_id, text = responses.NEW_USER_JOINED.format(user.display_name))
+            # only send if not the same user
+            if (u.id != user.id):
+                context.bot.send_message(chat_id=u.chat_id, text = responses.NEW_USER_JOINED.format(user.display_name))
 
 if __name__ == "__main__":
     try:
