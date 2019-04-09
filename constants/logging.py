@@ -21,6 +21,8 @@ DB_USER_ADDED = "User <{0}> with id <{1}> added to the database"
 
 DB_USER_UPDATED = "User <{0}> with id <{1}> updated in the database"
 
+DB_USER_DELETED = "User <{0}> with id <{1}> deleted from the database"
+
 DB_USER_NOT_FOUND = "User with id <{0}> not found"
 
 DB_EVENT_ADDED = "Event <{0}> with id <{1}> added to the database"
@@ -50,3 +52,5 @@ NO_ORGANIZER_FOR_EVENT = "No organizer record for event <{0}> with id <{1}>"
 NO_ORGANIZER_LOCATION = "No location record for event <{0}> with id <{1}> organizer <{2}> with id <{3}>"
 
 NEW_MEMBER_NOTIFIED = "Notified all users about new member <{0}> with id <{1}>"
+
+BOT_BLOCKED = "User <{0}> with id <{1}> blocked the bot"

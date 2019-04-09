@@ -66,6 +66,14 @@ class MongoDriver:
         del result['_id']
         # Wrap result in a user class
         return User(**result)
+
+    def remove_user(self, user: User):
+        result = self.users.delete_one({u'id': user.id})
+
+        if result.matched_count > 0:
+            self.logger.info(logging_settings.DB_USER_DELETED.format(user.display_name, user.id))
+        else:
+            self.logger.info(logging_settings.DB_USER_NOT_FOUND.format(user.id))
     
     def get_all_users(self):
         result = list(self.users.find({}))

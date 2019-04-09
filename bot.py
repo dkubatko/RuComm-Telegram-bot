@@ -1,5 +1,7 @@
 from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
+from telegram.error import (TelegramError, Unauthorized, BadRequest, 
+                            TimedOut, ChatMigrated, NetworkError)
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 import settings
 from datetime import datetime
@@ -38,7 +40,8 @@ class RusMafiaBot:
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
         location_handler = MessageHandler(Filters.location, self.handle_location)
-        
+
+        dispatcher.add_error_handler(self.error_callback)
 
         dispatcher.add_handler(echo_handler)
         dispatcher.add_handler(start_handler)
@@ -49,8 +52,6 @@ class RusMafiaBot:
         dispatcher.add_handler(command_query_handler)
         dispatcher.add_handler(location_handler)
         dispatcher.add_handler(command_location_handler)
-        
-        dispatcher.add_error_handler(self.error_callback)
 
     def setup_logging(self):
         self.logger = logging.getLogger('bot')
@@ -74,6 +75,34 @@ class RusMafiaBot:
     def start(self, clean=False):
         self.logger.info(logging_settings.BOT_START)
         self.updater.start_polling(clean=clean)
+
+    # Error handler
+
+    def error_callback(self, update, context):
+        user_id = update.message.from_user.id
+        user = self.db_driver.get_user(user_id)
+
+        try:
+            raise context.error
+        except Unauthorized:
+            self.logger.info(logging_settings.BOT_BLOCKED.format(user.display_name, user.id))
+            self.db_driver.remove_user(user)
+            # remove update.message.chat_id from conversation list
+        except BadRequest:
+            print("Bad request")
+            # handle malformed requests - read more below!
+        except TimedOut:
+            print("Timed out")
+            # handle slow connection problems
+        except NetworkError:
+            print("Network Error")
+            # handle other connection problems
+        except ChatMigrated as e:
+            print("Migrated")
+            # the chat_id of a group has changed, use e.new_chat_id instead
+        except TelegramError as e:
+            print("Error " + str(e))
+            # handle all other telegram related errors
 
     # Command handlers
     
@@ -653,15 +682,6 @@ class RusMafiaBot:
         # save user location
         user.fields['location'] = f"{update.message.location.latitude}, {update.message.location.longitude}"
         self.db_driver.update_user(user)
-
-
-    # Error handlers
-
-    def error_callback(self, bot, update, error):
-        try:
-            raise error
-        except TelegramError as e:
-            print(e)
 
     # Helper/auxillary functions
 
