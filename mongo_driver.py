@@ -66,6 +66,16 @@ class MongoDriver:
         del result['_id']
         # Wrap result in a user class
         return User(**result)
+    
+    def get_user_by_chat_id(self, chat_id):
+        result = self.users.find_one({'chat_id': chat_id})
+        if not result:
+            self.logger.info(logging_settings.DB_USER_NOT_FOUND_BY_CHAT_ID.format(chat_id))
+            return None
+        
+        del result['_id']
+        # Wrap result in a user class
+        return User(**result)
 
     def remove_user(self, user: User):
         result = self.users.delete_one({u'id': user.id})

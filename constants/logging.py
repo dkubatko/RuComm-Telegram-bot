@@ -25,6 +25,8 @@ DB_USER_DELETED = "User <{0}> with id <{1}> deleted from the database"
 
 DB_USER_NOT_FOUND = "User with id <{0}> not found"
 
+DB_USER_NOT_FOUND_BY_CHAT_ID = "User with chat_id <{0}> not found"
+
 DB_EVENT_ADDED = "Event <{0}> with id <{1}> added to the database"
 
 DB_EVENT_UPDATED = "Event <{0}> with id <{1}> updated in the database"

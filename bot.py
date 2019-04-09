@@ -81,8 +81,8 @@ class RusMafiaBot:
     # Error handler
 
     def error_callback(self, update, context):
-        user_id = update.message.from_user.id
-        user = self.db_driver.get_user(user_id)
+        chat_id = update.effective_chat.id
+        user = self.db_driver.get_user_by_chat_id(chat_id)
 
         try:
             raise context.error
@@ -117,9 +117,9 @@ class RusMafiaBot:
 
         is_new = self.db_driver.add_user(new_user)
 
-        if (is_new and new_user.display_name):
-            self.new_member_notify(context, new_user)
-            self.logger.info(logging_settings.NEW_MEMBER_NOTIFIED.format(new_user.display_name, new_user.id))
+        # if (is_new and new_user.display_name):
+            # self.new_member_notify(context, new_user)
+            # self.logger.info(logging_settings.NEW_MEMBER_NOTIFIED.format(new_user.display_name, new_user.id))
 
         context.bot.send_message(chat_id=update.message.chat_id, 
                 text = responses.WELCOME_MESSAGE.format(username), 
@@ -130,7 +130,11 @@ class RusMafiaBot:
         users = self.db_driver.get_all_users()
 
         for user in users:
-            context.bot.send_message(chat_id=user.chat_id, text = responses.TEST_BLOCKED)
+            try:
+                context.bot.send_message(chat_id=user.chat_id, text = responses.TEST_BLOCKED)
+            except Exception:
+                self.logger.info(f"FOUND BLOCKED: {user.display_name}, id: {user.id}")
+                return
 
     def command_admin(self, update, context):
         user_id = update.message.from_user.id
