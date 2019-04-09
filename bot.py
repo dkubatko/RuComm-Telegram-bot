@@ -36,6 +36,7 @@ class RusMafiaBot:
         create_event_handler = CommandHandler('create_event', self.command_create_event)
         list_events_handler = CommandHandler('events', self.command_list_events, pass_user_data=True)
         command_location_handler = CommandHandler('location', self.command_grant_location)
+        test_blocked_handler = CommandHandler('test_blocked', self.command_test_blocked)
         # other handlers
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
@@ -52,6 +53,7 @@ class RusMafiaBot:
         dispatcher.add_handler(command_query_handler)
         dispatcher.add_handler(location_handler)
         dispatcher.add_handler(command_location_handler)
+        dispatcher.add_handler(test_blocked_handler)
 
     def setup_logging(self):
         self.logger = logging.getLogger('bot')
@@ -116,17 +118,19 @@ class RusMafiaBot:
         is_new = self.db_driver.add_user(new_user)
 
         if (is_new and new_user.display_name):
-            try:
-                self.new_member_notify(context, new_user)
-                self.logger.info(logging_settings.NEW_MEMBER_NOTIFIED.format(new_user.display_name, new_user.id))
-            except Exception as e:
-                print(e)
-                traceback.print_tb(e.__traceback__)
+            self.new_member_notify(context, new_user)
+            self.logger.info(logging_settings.NEW_MEMBER_NOTIFIED.format(new_user.display_name, new_user.id))
 
         context.bot.send_message(chat_id=update.message.chat_id, 
                 text = responses.WELCOME_MESSAGE.format(username), 
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True)
+
+    def command_test_blocked(self, update, context):
+        users = self.db_driver.get_all_users()
+
+        for user in users:
+            context.bot.send_message(chat_id=user.chat_id, text = responses.TEST_BLOCKED)
 
     def command_admin(self, update, context):
         user_id = update.message.from_user.id
