@@ -749,53 +749,57 @@ class RusMafiaBot:
                reply_markup=reply_markup)
 
     def command_sm_invite(self, update, context):
-        user_id = update.message.from_user.id
-        user = self.db_driver.get_user(user_id)
-
-        if (user is None):
-            context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
-            return
-
-        # Temp first/lastname updater
-        self.update_name(update, user)
-
-        if not (user.admin):
-            context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
-            return
-        
-        if (not context.args):
-            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
-            return
-        
-        new_member_id = context.args[0]
-
-        # convert to int
         try:
-            new_member_id = int(new_member_id)
-        except ValueError:
-            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
-            return
+            user_id = update.message.from_user.id
+            user = self.db_driver.get_user(user_id)
+
+            if (user is None):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+                return
+
+            # Temp first/lastname updater
+            self.update_name(update, user)
+
+            if not (user.admin):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+                return
             
+            if (not context.args):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+                return
+            
+            new_member_id = context.args[0]
 
-        invitee = self.db_driver.get_user(new_member_id)
+            # convert to int
+            try:
+                new_member_id = int(new_member_id)
+            except ValueError:
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+                return
+                
 
-        if (not invitee):
-            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
+            invitee = self.db_driver.get_user(new_member_id)
 
-        self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
+            if (not invitee):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
 
-        # set state to awaiting response
-        invitee.fields['state'] = 'sm_invited'
-        self.db_driver.update_user(invitee)
+            self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
 
-        # create invitation message
-        keyboard = [[InlineKeyboardButton("Accept", 
-                    callback_data='sm_invitation_accept')],
-                    [InlineKeyboardButton("Decline",
-                    callback_data='sm_invitation_decline')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        context.bot.send_message(chat_id=invitee, text = responses.SECRET_MAFIA_INVITATION, 
-                    reply_markup=reply_markup)
+            # set state to awaiting response
+            invitee.fields['state'] = 'sm_invited'
+            self.db_driver.update_user(invitee)
+
+            # create invitation message
+            keyboard = [[InlineKeyboardButton("Accept", 
+                        callback_data='sm_invitation_accept')],
+                        [InlineKeyboardButton("Decline",
+                        callback_data='sm_invitation_decline')]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            context.bot.send_message(chat_id=invitee, text = responses.SECRET_MAFIA_INVITATION, 
+                        reply_markup=reply_markup)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
     
     # Location handler
     
