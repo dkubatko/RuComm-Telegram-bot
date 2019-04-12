@@ -96,3 +96,6 @@ EVENT_NOTIFICATION = "@{0} notified everyone about the following event:"
 
 # Test blocked
 TEST_BLOCKED = "This is just a test to see if you have blocked me. Please disregard this message.\nThere is no other way to test it and my owner is extremely stressed 😭"
+
+# Secret mafia
+SECRET_MAFIA_WELCOME = ""

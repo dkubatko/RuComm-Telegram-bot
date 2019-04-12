@@ -36,6 +36,7 @@ class RusMafiaBot:
         create_event_handler = CommandHandler('create_event', self.command_create_event)
         list_events_handler = CommandHandler('events', self.command_list_events, pass_user_data=True)
         command_location_handler = CommandHandler('location', self.command_grant_location)
+        command_add_secret_member = CommandHandler('add_secret_member', self.command_add_secret_member)
         # other handlers
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
@@ -643,7 +644,7 @@ class RusMafiaBot:
 
         if (user is None):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
-            return    
+            return
 
         events = self.db_driver.get_ongoing_events()
 
@@ -668,6 +669,22 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=update.message.chat_id, 
                text=responses.LOCATION_REQUEST, 
                reply_markup=reply_markup)
+
+    def command_add_secret_member(self, update, context):
+        user_id = update.message.from_user.id
+        user = self.db_driver.get_user(user_id)
+
+        if (user is None):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+            return
+
+        if not (user.admin):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+            return
+        
+        new_member_id = context.args.get(0)
+
+        
 
     # Location handler
     
