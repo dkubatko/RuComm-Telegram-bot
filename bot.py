@@ -795,7 +795,7 @@ class RusMafiaBot:
                         [InlineKeyboardButton("Decline",
                         callback_data='sm_invitation_decline')]]
             reply_markup = InlineKeyboardMarkup(keyboard)
-            context.bot.send_message(chat_id=invitee, text = responses.SECRET_MAFIA_INVITATION, 
+            context.bot.send_message(chat_id=invitee.chat_id, text = responses.SECRET_MAFIA_INVITATION, 
                         reply_markup=reply_markup)
         except Exception as e:
             print(e)
