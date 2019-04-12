@@ -42,6 +42,8 @@ class RusMafiaBot:
         echo_handler = MessageHandler(Filters.text, self.message_default)
         location_handler = MessageHandler(Filters.location, self.handle_location)
 
+        #TODO: conversation handler
+
         dispatcher.add_error_handler(self.error_callback)
 
         dispatcher.add_handler(echo_handler)
@@ -390,6 +392,7 @@ class RusMafiaBot:
     
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
+        # TODO: use 'pattern' parameter in the query handler
         print("HERE HERE")
 
         query = update.callback_query
@@ -863,16 +866,19 @@ class RusMafiaBot:
                     self.db_driver.remove_user(u)
     
     def update_name(self, update, user: User):
-        # Get first/last name from the update
-        first_name = update.message.from_user.first_name
-        last_name = update.message.from_user.last_name
+        try:
+            # Get first/last name from the update
+            first_name = update.effective_user.first_name
+            last_name = update.effective_user.last_name
 
-        user.first_name = first_name
-        user.last_name = last_name
-        self.db_driver.update_user(user)
+            user.first_name = first_name
+            user.last_name = last_name
+            self.db_driver.update_user(user)
 
-        self.logger.info(logging_settings.USER_NAME_UPDATED.format(user.display_name, user.id, user.first_name, user.last_name))
-
+            self.logger.info(logging_settings.USER_NAME_UPDATED.format(user.display_name, user.id, user.first_name, user.last_name))
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
 
 if __name__ == "__main__":
     try:
