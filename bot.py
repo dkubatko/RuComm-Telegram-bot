@@ -112,14 +112,14 @@ class RusMafiaBot:
     # Command handlers
     
     def command_start(self, update, context):
-        username = update.message.from_user.username
-        first_name = update.message.from_user.first_name
-        last_name = update.message.from_user.last_name
+        username = update.effective_user.username
+        first_name = update.effective_user.first_name
+        last_name = update.effective_user.last_name
 
         self.logger.info(logging_settings.COMMAND_START.format(username))
         
         # create new user
-        new_user = User(update.message.from_user.id, username, update.message.chat_id,
+        new_user = User(update.effective_user.id, username, update.message.chat_id,
                     first_name=first_name, last_name=last_name)
 
         is_new = self.db_driver.add_user(new_user)
@@ -134,7 +134,7 @@ class RusMafiaBot:
                 disable_web_page_preview=True)
 
     def command_admin(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if not user:
@@ -150,7 +150,7 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_ADMIN)
     
     def command_cancel(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if not user:
@@ -169,7 +169,7 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=update.message.chat_id, text = responses.COMMAND_CANCELED, reply_markup=reply_markup)
 
     def command_create_event(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if not user:
@@ -198,7 +198,7 @@ class RusMafiaBot:
     # Message handlers
 
     def message_default(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if (user is None):
@@ -739,7 +739,7 @@ class RusMafiaBot:
             reply_markup=reply_markup)
 
     def command_list_events(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if (user is None):
@@ -775,7 +775,7 @@ class RusMafiaBot:
 
     def command_sm_invite(self, update, context):
         try:
-            user_id = update.message.from_user.id
+            user_id = update.effective_user.id
             user = self.db_driver.get_user(user_id)
 
             if (user is None):
@@ -830,7 +830,7 @@ class RusMafiaBot:
     # Location handler
     
     def handle_location(self, update, context):
-        user_id = update.message.from_user.id
+        user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
 
         if (user is None):
