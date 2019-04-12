@@ -639,7 +639,7 @@ class RusMafiaBot:
             self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.display_name, user.id))
 
             context.bot.send_message(chat_id = user.chat_id, 
-                    text = responses.SM_INVITATION_ACCEPTED,
+                    text = responses.SM_INVITATION_ACCEPTED.format(user.first_name),
                     parse_mode=ParseMode.HTML)
         except Exception as e:
             print(e)
