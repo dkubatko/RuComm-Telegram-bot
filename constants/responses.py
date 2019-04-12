@@ -101,6 +101,7 @@ TEST_BLOCKED = "This is just a test to see if you have blocked me. Please disreg
 SECRET_MAFIA_INVITATION = "You have been honored to receive an invitation to the Secret Russian Mafia (SRM). Would you accept your invitation?"
 SM_INVITATION_ARGS = "Not enough arguments for /sm_invite [id]"
 SM_INVITATION_USER_NOT_FOUND = "User with id {0} not found"
+SM_INVITATION_ALREADY_MEMBER = "This user is already a member of the SRM!"
 SM_INVITATION_EXPIRED = "You took too long to accept the invitation.\nApologize to the don and you might get another chance☝"
 
 SM_INVITATION_ACCEPTED = '''

@@ -790,6 +790,11 @@ class RusMafiaBot:
 
         if (not invitee):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
+            return
+        
+        if (invitee.fields.get('sm_member', False)):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ALREADY_MEMBER)
+            return
 
         self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
 
