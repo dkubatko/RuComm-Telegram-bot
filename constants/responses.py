@@ -126,6 +126,8 @@ What did they think when they invited you to join SRM?..🤥
 Ahh, whatever. I'll just call you "Don {1}".
 
 Welcome, anyway 🤗
+
+You can now use /chat <i>message</i> to communicate with other members.
 '''
 
 SM_INVITATION_DECLINED = "Pozor. You are still a member of the mafia, I guess...😒"

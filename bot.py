@@ -851,6 +851,11 @@ class RusMafiaBot:
             
             message = ' '.join(context.args)
 
+            # Delete original message
+            context.bot.delete_message(chat_id=user.chat_id, 
+                    message_id=update.message.message_id)
+
+            # Replace with sent message
             self.sm_member_message(context, user, message)
 
             self.logger.info(logging_settings.SM_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
@@ -921,14 +926,13 @@ class RusMafiaBot:
         sm_members = [user for user in users if user.fields.get('sm_member', False)]
 
         for member in sm_members:
-            if (member.id != sender.id):
-                try:
-                    context.bot.send_message(chat_id=member.chat_id, 
-                            text = responses.SM_CHAT_MESSAGE.format(sender.fields.get('sm_nickname'), message),
-                            parse_mode=ParseMode.HTML)
-                except Unauthorized:
-                    self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
-                    self.db_driver.remove_user(member)
+            try:
+                context.bot.send_message(chat_id=member.chat_id, 
+                        text = responses.SM_CHAT_MESSAGE.format(sender.fields.get('sm_nickname'), message),
+                        parse_mode=ParseMode.HTML)
+            except Unauthorized:
+                self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
+                self.db_driver.remove_user(member)
     
     def update_name(self, update, user: User):
         try:
