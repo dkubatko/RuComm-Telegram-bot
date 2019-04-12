@@ -392,7 +392,7 @@ class RusMafiaBot:
             text = responses.SM_SECRET_NAME_RESPONSE.format(nickname, user.first_name),
             parse_mode=ParseMode.HTML)
 
-        self.logger.info(logging_settings.SB_NICKNAME_SET.format(user.display_name, user.id, nickname))
+        self.logger.info(logging_settings.SM_NICKNAME_SET.format(user.display_name, user.id, nickname))
 
         try:
             self.new_sm_member_notify(context, user)
@@ -400,7 +400,7 @@ class RusMafiaBot:
             print(e)
             traceback.print_tb(e.__traceback__)
 
-        self.logger.info(logging_settings.SB_NEW_MEMBER_NOTIFIED.format(nickname))
+        self.logger.info(logging_settings.SM_NEW_MEMBER_NOTIFIED.format(nickname))
 
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
@@ -840,7 +840,7 @@ class RusMafiaBot:
             # Temp first/lastname updater
             self.update_name(update, user)
 
-            if not (user.fields.get('sb_member', False)):
+            if not (user.fields.get('sm_member', False)):
                 context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
                 return
 
@@ -852,7 +852,7 @@ class RusMafiaBot:
 
             self.sm_member_message(context, user, message)
 
-            self.logger.info(logging_settings.SB_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
+            self.logger.info(logging_settings.SM_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
         except Exception as e:
             print(e)
             traceback.print_tb(e.__traceback__)
