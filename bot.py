@@ -853,6 +853,9 @@ class RusMafiaBot:
             self.sm_member_message(context, user, message)
 
             self.logger.info(logging_settings.SM_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
+        
+            context.bot.send_message(chat_id=update.message.chat_id,
+                text = responses.SM_MESSAGE_SENT)
         except Exception as e:
             print(e)
             traceback.print_tb(e.__traceback__)
