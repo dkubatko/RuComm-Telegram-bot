@@ -906,7 +906,7 @@ class RusMafiaBot:
             if (member.id != new_member.id):
                 try:
                     context.bot.send_message(chat_id=member.chat_id, 
-                            text = responses.SM_NEW_MEMBER_NOTIFICATION.format(new_member.fields.get('sb_nickname')))
+                            text = responses.SM_NEW_MEMBER_NOTIFICATION.format(new_member.fields.get('sm_nickname')))
                 except Unauthorized:
                     self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
                     self.db_driver.remove_user(member)
