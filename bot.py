@@ -413,28 +413,32 @@ class RusMafiaBot:
         # Non-admin event callbacks
 
         message_id = query.message.message_id
+        try:
 
-        if ('event_going' in action):
-            # get the event id
-            event_id = action.split('_')[-1]
-            self.event_going(context, user, self.db_driver.get_event(event_id), message_id)
-            return
-        elif ('event_not_going' in action):
-            # get the event id
-            event_id = action.split('_')[-1]
-            self.event_not_going(context, user, self.db_driver.get_event(event_id), message_id)
-            return
-        elif ('event_location' in action):
-            # get the event id
-            event_id = action.split('_')[-1]
-            self.show_event_location(context, user, self.db_driver.get_event(event_id))
-            return
-        elif ('sm_invitation_accept' in action):
-            self.sm_invitation_accept(context, user, message_id)
-            return
-        elif ('sm_invitation_decline' in action):
-            self.sm_invitation_decline(context, user, message_id)
-            return
+            if ('event_going' in action):
+                # get the event id
+                event_id = action.split('_')[-1]
+                self.event_going(context, user, self.db_driver.get_event(event_id), message_id)
+                return
+            elif ('event_not_going' in action):
+                # get the event id
+                event_id = action.split('_')[-1]
+                self.event_not_going(context, user, self.db_driver.get_event(event_id), message_id)
+                return
+            elif ('event_location' in action):
+                # get the event id
+                event_id = action.split('_')[-1]
+                self.show_event_location(context, user, self.db_driver.get_event(event_id))
+                return
+            elif ('sm_invitation_accept' in action):
+                self.sm_invitation_accept(context, user, message_id)
+                return
+            elif ('sm_invitation_decline' in action):
+                self.sm_invitation_decline(context, user, message_id)
+                return
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
             
         # Admin event callbacks
 
@@ -616,38 +620,45 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_NOT_GOING.format(num_attendees, event.name))
 
     def sm_invitation_accept(self, context, user: User, message_id):
-        # Delete the invitation message
-        context.bot.delete_message(user.chat_id, message_id)
+        try:
+            # Delete the invitation message
+            context.bot.delete_message(user.chat_id, message_id)
 
-        if (user.fields.get('state') != 'sm_invited'):
-            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
-            return
-        
-        user.fields['sm_member'] = True
-        user.fields['state'] = 'sm_nickname'
-        self.db_driver.update_user(user)
+            if (user.fields.get('state') != 'sm_invited'):
+                context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+                return
+            
+            user.fields['sm_member'] = True
+            user.fields['state'] = 'sm_nickname'
+            self.db_driver.update_user(user)
 
-        self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.username, user.id))
+            self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.username, user.id))
 
-        context.bot.send_message(chat_id = user.chat_id, 
-                text = responses.SM_INVITATION_ACCEPTED,
-                parse_mode=ParseMode.HTML)
+            context.bot.send_message(chat_id = user.chat_id, 
+                    text = responses.SM_INVITATION_ACCEPTED,
+                    parse_mode=ParseMode.HTML)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
     
     def sm_invitation_decline(self, context, user: User, message_id):
-        # Delete the invitation message
-        context.bot.delete_message(user.chat_id, message_id)
+        try:
+            # Delete the invitation message
+            context.bot.delete_message(user.chat_id, message_id)
 
-        if (user.fields.get('state') != 'sm_invited'):
-            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
-            return
-    
-        user.fields['state'] = None
-        self.db_driver.update_user(user)
-
-        self.logger.info(logging_settings.SM_DECLINED.format(user.username, user.id))
-
-        context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
+            if (user.fields.get('state') != 'sm_invited'):
+                context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+                return
         
+            user.fields['state'] = None
+            self.db_driver.update_user(user)
+
+            self.logger.info(logging_settings.SM_DECLINED.format(user.username, user.id))
+
+            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
     
     def show_event_location(self, context, user: User, event: Event):
         # Get event organizer
@@ -791,8 +802,8 @@ class RusMafiaBot:
 
             # create invitation message
             keyboard = [[InlineKeyboardButton("Accept", 
-                        callback_data='sm_invitation_accept')],
-                        [InlineKeyboardButton("Decline",
+                        callback_data='sm_invitation_accept'),
+                        InlineKeyboardButton("Decline",
                         callback_data='sm_invitation_decline')]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             print(invitee.chat_id)
