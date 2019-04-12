@@ -410,6 +410,9 @@ class RusMafiaBot:
 
         action = query.data
 
+        print("In command query")
+        print(action)
+
         # Non-admin event callbacks
 
         message_id = query.message.message_id
@@ -431,9 +434,11 @@ class RusMafiaBot:
                 self.show_event_location(context, user, self.db_driver.get_event(event_id))
                 return
             elif ('sm_invitation_accept' in action):
+                print("AYAYAYA")
                 self.sm_invitation_accept(context, user, message_id)
                 return
             elif ('sm_invitation_decline' in action):
+                print("YOYOYO")
                 self.sm_invitation_decline(context, user, message_id)
                 return
         except Exception as e:
