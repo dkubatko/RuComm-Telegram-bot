@@ -848,7 +848,8 @@ class RusMafiaBot:
                 context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
                 return
             
-            message = ' '.join(context.args)
+            # limit by 20 symbols
+            message = ' '.join(context.args)[:20]
 
             self.sm_member_message(context, user, message)
 
