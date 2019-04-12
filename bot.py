@@ -37,6 +37,7 @@ class RusMafiaBot:
         list_events_handler = CommandHandler('events', self.command_list_events, pass_user_data=True)
         command_location_handler = CommandHandler('location', self.command_grant_location)
         command_sm_invite = CommandHandler('sm_invite', self.command_sm_invite)
+        command_sm_chat = CommandHandler('chat', self.command_sm_chat)
         # other handlers
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
@@ -56,6 +57,7 @@ class RusMafiaBot:
         dispatcher.add_handler(location_handler)
         dispatcher.add_handler(command_location_handler)
         dispatcher.add_handler(command_sm_invite)
+        dispatcher.add_handler(command_sm_chat)
 
     def setup_logging(self):
         self.logger = logging.getLogger('bot')
@@ -389,7 +391,17 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=update.message.chat_id,
             text = responses.SM_SECRET_NAME_RESPONSE.format(nickname, user.first_name),
             parse_mode=ParseMode.HTML)
-    
+
+        self.logger.info(logging_settings.SB_NICKNAME_SET.format(user.display_name, user.id, nickname))
+
+        try:
+            self.new_sm_member_notify(context, user)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
+
+        self.logger.info(logging_settings.SB_NEW_MEMBER_NOTIFIED.format(nickname))
+
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
         # TODO: use 'pattern' parameter in the query handler
@@ -816,7 +828,37 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id,
                 text = responses.SM_INVITATION_SENT.format(invitee.first_name, invitee.display_name))
 
-    
+    def command_sm_chat(self, update, context):
+        try:
+            user_id = update.effective_user.id
+            user = self.db_driver.get_user(user_id)
+
+            if (user is None):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+                return
+
+            # Temp first/lastname updater
+            self.update_name(update, user)
+
+            if not (user.fields.get('sb_member', False)):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+                return
+
+            if (not context.args):
+                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
+                return
+            
+            message = context.args[0]
+
+            self.sm_member_message(context, user, message)
+
+            self.logger.info(logging_settings.SB_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
+        
+        
+
     # Location handler
     
     def handle_location(self, update, context):
@@ -854,6 +896,34 @@ class RusMafiaBot:
                 except Unauthorized:
                     self.logger.info(logging_settings.BOT_BLOCKED.format(u.display_name, u.id))
                     self.db_driver.remove_user(u)
+    
+    def new_sm_member_notify(self, context, new_member: User):
+        users = self.db_driver.get_all_users()
+
+        sm_members = [user for user in users if user.fields.get('sm_member', False)]
+
+        for member in sm_members:
+            if (member.id != new_member.id):
+                try:
+                    context.bot.send_message(chat_id=member.chat_id, 
+                            text = responses.SM_NEW_MEMBER_NOTIFICATION.format(new_member.fields.get('sb_nickname')))
+                except Unauthorized:
+                    self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
+                    self.db_driver.remove_user(member)
+    
+    def sm_member_message(self, context, sender: User, message):
+        users = self.db_driver.get_all_users()
+
+        sm_members = [user for user in users if user.fields.get('sm_member', False)]
+
+        for member in sm_members:
+            if (member.id != sender.id):
+                try:
+                    context.bot.send_message(chat_id=member.chat_id, 
+                            text = responses.SM_CHAT_MESSAGE.format(sender.fields.get('sb_nickname'), message))
+                except Unauthorized:
+                    self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
+                    self.db_driver.remove_user(member)
     
     def update_name(self, update, user: User):
         try:

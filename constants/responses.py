@@ -129,3 +129,14 @@ Welcome, anyway 🤗
 '''
 
 SM_INVITATION_DECLINED = "Pozor. You are still a member of the mafia, I guess...😒"
+
+SM_NEW_MEMBER_NOTIFICATION = "Greet our new SRM member: {0}!"
+
+SM_MESSAGE_ARGS = "Not enough arguments for /chat [message]"
+
+SM_CHAT_MESSAGE = '''
+<b>S</b>ecret <b>R</b>ussian <b>M</b>afia message:
+<i>{0}</i>: {1}
+'''
+
+SM_MESSAGE_SENT = "SRM message sent!"

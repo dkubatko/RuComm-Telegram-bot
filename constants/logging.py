@@ -63,4 +63,10 @@ SM_NEW_MEMBER = "User <{0}> with id <{1}> accepted the secret mafia invitation"
 
 SM_DECLINED = "User <{0}> with id <{1}> declined the secret mafia invitation"
 
+SB_NICKNAME_SET = "User <{0}> with id <{1}> chose nickname {2} for the SRM"
+
+SB_NEW_MEMBER_NOTIFIED = "All SRM members notified about new member <{0}>"
+
 USER_NAME_UPDATED = "Update name of user <{0}> with id <{1}> to {2} {3}"
+
+SB_CHAT_NEW_MESSAGE = "User <{0}> with id <{1}> sent new message to the SRM chat"
