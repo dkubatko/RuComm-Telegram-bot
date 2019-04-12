@@ -393,7 +393,6 @@ class RusMafiaBot:
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
         # TODO: use 'pattern' parameter in the query handler
-        print("HERE HERE")
 
         query = update.callback_query
 
@@ -419,40 +418,31 @@ class RusMafiaBot:
 
         action = query.data
 
-        print("In command query")
-        print(action)
-
         # Non-admin event callbacks
 
         message_id = query.message.message_id
-        try:
 
-            if ('event_going' in action):
-                # get the event id
-                event_id = action.split('_')[-1]
-                self.event_going(context, user, self.db_driver.get_event(event_id), message_id)
-                return
-            elif ('event_not_going' in action):
-                # get the event id
-                event_id = action.split('_')[-1]
-                self.event_not_going(context, user, self.db_driver.get_event(event_id), message_id)
-                return
-            elif ('event_location' in action):
-                # get the event id
-                event_id = action.split('_')[-1]
-                self.show_event_location(context, user, self.db_driver.get_event(event_id))
-                return
-            elif ('sm_invitation_accept' in action):
-                print("AYAYAYA")
-                self.sm_invitation_accept(context, user, message_id)
-                return
-            elif ('sm_invitation_decline' in action):
-                print("YOYOYO")
-                self.sm_invitation_decline(context, user, message_id)
-                return
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+        if ('event_going' in action):
+            # get the event id
+            event_id = action.split('_')[-1]
+            self.event_going(context, user, self.db_driver.get_event(event_id), message_id)
+            return
+        elif ('event_not_going' in action):
+            # get the event id
+            event_id = action.split('_')[-1]
+            self.event_not_going(context, user, self.db_driver.get_event(event_id), message_id)
+            return
+        elif ('event_location' in action):
+            # get the event id
+            event_id = action.split('_')[-1]
+            self.show_event_location(context, user, self.db_driver.get_event(event_id))
+            return
+        elif ('sm_invitation_accept' in action):
+            self.sm_invitation_accept(context, user, message_id)
+            return
+        elif ('sm_invitation_decline' in action):
+            self.sm_invitation_decline(context, user, message_id)
+            return
             
         # Admin event callbacks
 
