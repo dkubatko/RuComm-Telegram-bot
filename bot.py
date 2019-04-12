@@ -647,8 +647,10 @@ class RusMafiaBot:
     
     def sm_invitation_decline(self, context, user: User, message_id):
         try:
-            # Delete the invitation message
-            context.bot.delete_message(user.chat_id, message_id)
+            # Edit the invitation message
+            reply_markup = InlineKeyboardMarkup([[]])
+            context.bot.edit_message_reply_markup(chat_id=user.chat_id,
+                    message_id=message_id, reply_markup=reply_markup)
 
             if (user.fields.get('state') != 'sm_invited'):
                 context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
