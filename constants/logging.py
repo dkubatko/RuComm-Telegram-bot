@@ -56,3 +56,11 @@ NO_ORGANIZER_LOCATION = "No location record for event <{0}> with id <{1}> organi
 NEW_MEMBER_NOTIFIED = "Notified all users about new member <{0}> with id <{1}>"
 
 BOT_BLOCKED = "User <{0}> with id <{1}> blocked the bot"
+
+SM_INVITATION = "User <{0}> with id <{1}> invited user {2} with id {3} to the mafia"
+
+SM_NEW_MEMBER = "User <{0}> with id <{1}> accepted the secret mafia invitation"
+
+SM_DECLINED = "User <{0}> with id <{1}> declined the secret mafia invitation"
+
+USER_NAME_UPDATED = "Update name of user <{0}> with id <{1}> to {2} {3}"

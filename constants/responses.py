@@ -98,4 +98,24 @@ EVENT_NOTIFICATION = "@{0} notified everyone about the following event:"
 TEST_BLOCKED = "This is just a test to see if you have blocked me. Please disregard this message.\nThere is no other way to test it and my owner is extremely stressed 😭"
 
 # Secret mafia
-SECRET_MAFIA_WELCOME = ""
+SECRET_MAFIA_INVITATION = "You have been honored to receive an invitation to the Secret Russian Mafia (SRM). Would you accept your invitation?"
+SM_INVITATION_ARGS = "Not enough arguments for /sm_invite [id]"
+SM_INVITATION_USER_NOT_FOUND = "User with id {0} not found"
+SM_INVITATION_EXPIRED = "You took too long to accept the invitation.\nApologize to the don and you might get another chance☝"
+
+SM_INVITATION_ACCEPTED = '''
+<i>Well, well don {0}.</i>
+We welcome you in the secret society of outstanding individuals.
+You might have been chosen due to your unique <b>skills</b>, extreme <b>intelligence</b>, enchanting <b>beauty</b>...
+Or, most likely, just because you are a friend of one of the well-known members.😅
+Nonetheless, you have an opportunity to choose a secret nickname for youself. Just send it to me!
+'''
+
+SM_SECRET_NAME_RESPONSE = '''
+HAHAHAHAHAHA
+Wait, do you really think {0} is a good nickname?!😬
+What did they think when they invited you to join SRM?..🤥
+Ahh, whatever. I'll just call you "Don {1}".
+Welcome, anyway.🤗
+'''
+SM_INVITATION_DECLINED = "Pozor. You are still a member of the mafia, I guess...😒"

@@ -36,7 +36,7 @@ class RusMafiaBot:
         create_event_handler = CommandHandler('create_event', self.command_create_event)
         list_events_handler = CommandHandler('events', self.command_list_events, pass_user_data=True)
         command_location_handler = CommandHandler('location', self.command_grant_location)
-        command_add_secret_member = CommandHandler('add_secret_member', self.command_add_secret_member)
+        command_sm_invite = CommandHandler('sm_invite', self.command_sm_invite)
         # other handlers
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
@@ -53,6 +53,7 @@ class RusMafiaBot:
         dispatcher.add_handler(command_query_handler)
         dispatcher.add_handler(location_handler)
         dispatcher.add_handler(command_location_handler)
+        dispatcher.add_handler(command_sm_invite)
 
     def setup_logging(self):
         self.logger = logging.getLogger('bot')
@@ -110,10 +111,14 @@ class RusMafiaBot:
     
     def command_start(self, update, context):
         username = update.message.from_user.username
+        first_name = update.message.from_user.first_name
+        last_name = update.message.from_user.last_name
+
         self.logger.info(logging_settings.COMMAND_START.format(username))
         
         # create new user
-        new_user = User(update.message.from_user.id, username, update.message.chat_id)
+        new_user = User(update.message.from_user.id, username, update.message.chat_id,
+                    first_name=first_name, last_name=last_name)
 
         is_new = self.db_driver.add_user(new_user)
 
@@ -134,6 +139,9 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
         
+        # Temp first/lastname updater
+        self.update_name(update, user)        
+        
         if (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.IS_ADMIN)
         else:
@@ -146,6 +154,9 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
+        
+        # Temp first/lastname updater
+        self.update_name(update, user)
         
         # Clear the state
         user.fields['state'] = None
@@ -162,6 +173,9 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
+        
+        # Temp first/lastname updater
+        self.update_name(update, user)
 
         if not (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
@@ -189,6 +203,9 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
         
+        # Temp first/lastname updater
+        self.update_name(update, user)
+        
         if (user.fields.get('state', None) is None):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.MESSAGE_RESPONSE)
             return
@@ -200,6 +217,9 @@ class RusMafiaBot:
 
     def handle_state(self, update, context, user):
         state = user.fields.get('state', None)
+
+        # Temp first/lastname updater
+        self.update_name(update, user)
 
         if (state == 'event_create_start'):
             self.create_event_start(update, context, user)
@@ -215,6 +235,8 @@ class RusMafiaBot:
             self.create_event_save(update, context, user)
         elif (state == 'event_create_cancel'):
             self.create_event_cancel(update, context, user)
+        elif (state == 'sm_nickname'):
+            self.sm_member_nickname(update, context, user)
         else:
             self.logger.error(logging_settings.INVALID_USER_STATE.format(state))
 
@@ -356,6 +378,16 @@ class RusMafiaBot:
         self.db_driver.update_user(user)
         context.bot.send_message(chat_id=update.message.chat_id, text = responses.COMMAND_CANCELED)
         
+    def sm_member_nickname(self, update, context, user):
+        nickname = update.message.text
+        user.fields['sm_nickname'] = nickname
+        user.fields['state'] = None
+        self.db_driver.update_user(user)
+
+        context.bot.send_message(chat_id=update.message.chat_id,
+            text = responses.SM_SECRET_NAME_RESPONSE.format(nickname, user.first_name),
+            parse_mode=ParseMode.HTML)
+    
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
         query = update.callback_query
@@ -372,6 +404,9 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=query.message.chat_id, text = responses.NOT_REGISTERED)
             return
+        
+        # Temp first/lastname updater
+        self.update_name(update, user)
 
         action = query.data
 
@@ -394,7 +429,13 @@ class RusMafiaBot:
             event_id = action.split('_')[-1]
             self.show_event_location(context, user, self.db_driver.get_event(event_id))
             return
-
+        elif ('sm_invitation_accept' in action):
+            self.sm_invitation_accept(context, user, message_id)
+            return
+        elif ('sm_invitation_decline' in action):
+            self.sm_invitation_decline(context, user, message_id)
+            return
+            
         # Admin event callbacks
 
         if not (user.admin):
@@ -574,6 +615,40 @@ class RusMafiaBot:
         
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_NOT_GOING.format(num_attendees, event.name))
 
+    def sm_invitation_accept(self, context, user: User, message_id):
+        # Delete the invitation message
+        context.bot.delete_message(user.chat_id, message_id)
+
+        if (user.fields.get('state') != 'sm_invited'):
+            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+            return
+        
+        user.fields['sm_member'] = True
+        user.fields['state'] = 'sm_nickname'
+        self.db_driver.update_user(user)
+
+        self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.username, user.id))
+
+        context.bot.send_message(chat_id = user.chat_id, 
+                text = responses.SM_INVITATION_ACCEPTED,
+                parse_mode=ParseMode.HTML)
+    
+    def sm_invitation_decline(self, context, user: User, message_id):
+        # Delete the invitation message
+        context.bot.delete_message(user.chat_id, message_id)
+
+        if (user.fields.get('state') != 'sm_invited'):
+            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+            return
+    
+        user.fields['state'] = None
+        self.db_driver.update_user(user)
+
+        self.logger.info(logging_settings.SM_DECLINED.format(user.username, user.id))
+
+        context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
+        
+    
     def show_event_location(self, context, user: User, event: Event):
         # Get event organizer
         organizer = self.db_driver.get_user(event.organizer_id)
@@ -646,6 +721,9 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
 
+        # Temp first/lastname updater
+        self.update_name(update, user)
+
         events = self.db_driver.get_ongoing_events()
 
         if not events:
@@ -670,7 +748,7 @@ class RusMafiaBot:
                text=responses.LOCATION_REQUEST, 
                reply_markup=reply_markup)
 
-    def command_add_secret_member(self, update, context):
+    def command_sm_invite(self, update, context):
         user_id = update.message.from_user.id
         user = self.db_driver.get_user(user_id)
 
@@ -678,14 +756,39 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
 
+        # Temp first/lastname updater
+        self.update_name(update, user)
+
         if not (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
             return
         
+        if (not context.args):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+            return
+        
         new_member_id = context.args.get(0)
 
-        
+        invitee = self.db_driver.get_user(new_member_id)
 
+        if (not invitee):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
+
+        self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
+
+        # set state to awaiting response
+        invitee.fields['state'] = 'sm_invited'
+        self.db_driver.update_user(invitee)
+
+        # create invitation message
+        keyboard = [[InlineKeyboardButton("Accept", 
+                    callback_data='sm_invitation_accept')],
+                    [InlineKeyboardButton("Decline",
+                    callback_data='sm_invitation_decline')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_message(chat_id=invitee, text = responses.SECRET_MAFIA_INVITATION, 
+                    reply_markup=reply_markup)
+    
     # Location handler
     
     def handle_location(self, update, context):
@@ -723,6 +826,17 @@ class RusMafiaBot:
                 except Unauthorized:
                     self.logger.info(logging_settings.BOT_BLOCKED.format(u.display_name, u.id))
                     self.db_driver.remove_user(u)
+    
+    def update_name(self, update, user: User):
+        # Get first/last name from the update
+        first_name = update.message.from_user.first_name
+        last_name = update.message.from_user.last_name
+
+        user.first_name = first_name
+        user.last_name = last_name
+        self.db_driver.update_user(user)
+
+        self.logger.info(logging_settings.USER_NAME_UPDATED.format(user.display_name, user.id, user.first_name, user.last_name))
 
 
 if __name__ == "__main__":

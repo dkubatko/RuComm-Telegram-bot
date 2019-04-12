@@ -4,3 +4,5 @@ token.pickle
 __pycache__
 logs/*
 .vscode/*
+models/__pycache__
+constants/__pycache__
