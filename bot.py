@@ -848,7 +848,7 @@ class RusMafiaBot:
                 context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
                 return
             
-            message = context.args[0]
+            message = ' '.join(context.args)
 
             self.sm_member_message(context, user, message)
 
