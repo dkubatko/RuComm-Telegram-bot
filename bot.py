@@ -769,6 +769,14 @@ class RusMafiaBot:
         
         new_member_id = context.args[0]
 
+        # convert to int
+        try:
+            new_member_id = int(new_member_id)
+        except ValueError:
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+            return
+            
+
         invitee = self.db_driver.get_user(new_member_id)
 
         if (not invitee):
