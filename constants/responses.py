@@ -134,9 +134,6 @@ SM_NEW_MEMBER_NOTIFICATION = "Greet our new SRM member: {0}!"
 
 SM_MESSAGE_ARGS = "Not enough arguments for /chat [message]"
 
-SM_CHAT_MESSAGE = '''
-<b>S</b><b>R</b><b>M</b> <i>{0}</i>:
-<pre>{1}</pre>
-'''
+SM_CHAT_MESSAGE = '''[<b>S</b><b>R</b><b>M</b>] {0}: <pre>{1}</pre>'''
 
 SM_MESSAGE_SENT = "SRM message sent!"
