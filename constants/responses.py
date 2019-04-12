@@ -105,17 +105,26 @@ SM_INVITATION_EXPIRED = "You took too long to accept the invitation.\nApologize 
 
 SM_INVITATION_ACCEPTED = '''
 <i>Well, well don {0}.</i>
+
 We welcome you in the secret society of outstanding individuals.
+
 You might have been chosen due to your unique <b>skills</b>, extreme <b>intelligence</b>, enchanting <b>beauty</b>...
-Or, most likely, just because you are a friend of one of the well-known members.😅
+
+Or, most likely, just because you are friends with one of the well-known members.😅
+
 Nonetheless, you have an opportunity to choose a secret nickname for youself. Just send it to me!
 '''
 
 SM_SECRET_NAME_RESPONSE = '''
 HAHAHAHAHAHA
-Wait, do you really think {0} is a good nickname?!😬
+
+Wait, do you really think that {0} is a good nickname?!😬
+
 What did they think when they invited you to join SRM?..🤥
+
 Ahh, whatever. I'll just call you "Don {1}".
-Welcome, anyway.🤗
+
+Welcome, anyway 🤗
 '''
+
 SM_INVITATION_DECLINED = "Pozor. You are still a member of the mafia, I guess...😒"

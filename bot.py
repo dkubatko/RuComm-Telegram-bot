@@ -624,47 +624,38 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=user.chat_id, text = responses.EVENT_NOT_GOING.format(num_attendees, event.name))
 
     def sm_invitation_accept(self, context, user: User, message_id):
-        try:
-            # Delete the invitation message
-            context.bot.delete_message(user.chat_id, message_id)
+        # Delete the invitation message
+        context.bot.delete_message(user.chat_id, message_id)
 
-            if (user.fields.get('state') != 'sm_invited'):
-                context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
-                return
-            
-            user.fields['sm_member'] = True
-            user.fields['state'] = 'sm_nickname'
-            self.db_driver.update_user(user)
+        if (user.fields.get('state') != 'sm_invited'):
+            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+            return
+        
+        user.fields['sm_member'] = True
+        user.fields['state'] = 'sm_nickname'
+        self.db_driver.update_user(user)
 
-            self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.display_name, user.id))
+        self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.display_name, user.id))
 
-            context.bot.send_message(chat_id = user.chat_id, 
-                    text = responses.SM_INVITATION_ACCEPTED.format(user.first_name),
-                    parse_mode=ParseMode.HTML)
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+        context.bot.send_message(chat_id = user.chat_id, 
+                text = responses.SM_INVITATION_ACCEPTED.format(user.first_name),
     
     def sm_invitation_decline(self, context, user: User, message_id):
-        try:
-            # Edit the invitation message
-            reply_markup = InlineKeyboardMarkup([[]])
-            context.bot.edit_message_reply_markup(chat_id=user.chat_id,
-                    message_id=message_id, reply_markup=reply_markup)
+        # Remove the reply markup from the message
+        reply_markup = InlineKeyboardMarkup([[]])
+        context.bot.edit_message_reply_markup(chat_id=user.chat_id,
+                message_id=message_id, reply_markup=reply_markup)
 
-            if (user.fields.get('state') != 'sm_invited'):
-                context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
-                return
-        
-            user.fields['state'] = None
-            self.db_driver.update_user(user)
+        if (user.fields.get('state') != 'sm_invited'):
+            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_EXPIRED)
+            return
+    
+        user.fields['state'] = None
+        self.db_driver.update_user(user)
 
-            self.logger.info(logging_settings.SM_DECLINED.format(user.display_name, user.id))
+        self.logger.info(logging_settings.SM_DECLINED.format(user.display_name, user.id))
 
-            context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+        context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
     
     def show_event_location(self, context, user: User, event: Event):
         # Get event organizer
@@ -766,58 +757,54 @@ class RusMafiaBot:
                reply_markup=reply_markup)
 
     def command_sm_invite(self, update, context):
+        user_id = update.effective_user.id
+        user = self.db_driver.get_user(user_id)
+
+        if (user is None):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+            return
+
+        # Temp first/lastname updater
+        self.update_name(update, user)
+
+        if not (user.admin):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+            return
+        
+        if (not context.args):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+            return
+        
+        new_member_id = context.args[0]
+
+        # convert to int
         try:
-            user_id = update.effective_user.id
-            user = self.db_driver.get_user(user_id)
-
-            if (user is None):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
-                return
-
-            # Temp first/lastname updater
-            self.update_name(update, user)
-
-            if not (user.admin):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
-                return
+            new_member_id = int(new_member_id)
+        except ValueError:
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
+            return
             
-            if (not context.args):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
-                return
-            
-            new_member_id = context.args[0]
 
-            # convert to int
-            try:
-                new_member_id = int(new_member_id)
-            except ValueError:
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
-                return
-                
+        invitee = self.db_driver.get_user(new_member_id)
 
-            invitee = self.db_driver.get_user(new_member_id)
+        if (not invitee):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
 
-            if (not invitee):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_USER_NOT_FOUND.format(new_member_id))
+        self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
 
-            self.logger.info(logging_settings.SM_INVITATION.format(user.display_name, user.id, invitee.display_name, invitee.id))
+        # set state to awaiting response
+        invitee.fields['state'] = 'sm_invited'
+        self.db_driver.update_user(invitee)
 
-            # set state to awaiting response
-            invitee.fields['state'] = 'sm_invited'
-            self.db_driver.update_user(invitee)
-
-            # create invitation message
-            keyboard = [[InlineKeyboardButton("Accept", 
-                        callback_data='sm_invitation_accept'),
-                        InlineKeyboardButton("Decline",
-                        callback_data='sm_invitation_decline')]]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            print(invitee.chat_id)
-            context.bot.send_message(chat_id=invitee.chat_id, text = responses.SECRET_MAFIA_INVITATION, 
-                        reply_markup=reply_markup)
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+        # create invitation message
+        keyboard = [[InlineKeyboardButton("Accept", 
+                    callback_data='sm_invitation_accept'),
+                    InlineKeyboardButton("Decline",
+                    callback_data='sm_invitation_decline')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        print(invitee.chat_id)
+        context.bot.send_message(chat_id=invitee.chat_id, text = responses.SECRET_MAFIA_INVITATION, 
+                    reply_markup=reply_markup)
     
     # Location handler
     
