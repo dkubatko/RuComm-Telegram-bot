@@ -390,6 +390,8 @@ class RusMafiaBot:
     
     # Handles on-screen button presses
     def command_query_callback(self, update, context):
+        print("HERE HERE")
+
         query = update.callback_query
 
         if (query is None):
@@ -405,8 +407,12 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=query.message.chat_id, text = responses.NOT_REGISTERED)
             return
         
-        # Temp first/lastname updater
-        self.update_name(update, user)
+        try:
+            # Temp first/lastname updater
+            self.update_name(update, user)
+        except Exception as e:
+            print(e)
+            traceback.print_tb(e.__traceback__)
 
         action = query.data
 
