@@ -639,6 +639,7 @@ class RusMafiaBot:
 
         context.bot.send_message(chat_id = user.chat_id, 
                 text = responses.SM_INVITATION_ACCEPTED.format(user.first_name),
+                parse_mode=ParseMode.HTML)
     
     def sm_invitation_decline(self, context, user: User, message_id):
         # Remove the reply markup from the message
