@@ -920,7 +920,8 @@ class RusMafiaBot:
             if (member.id != sender.id):
                 try:
                     context.bot.send_message(chat_id=member.chat_id, 
-                            text = responses.SM_CHAT_MESSAGE.format(sender.fields.get('sb_nickname'), message))
+                            text = responses.SM_CHAT_MESSAGE.format(sender.fields.get('sm_nickname'), message),
+                            parse_mode=ParseMode.HTML)
                 except Unauthorized:
                     self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
                     self.db_driver.remove_user(member)
