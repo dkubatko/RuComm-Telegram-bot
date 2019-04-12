@@ -811,6 +811,11 @@ class RusMafiaBot:
 
         context.bot.send_message(chat_id=invitee.chat_id, text = responses.SECRET_MAFIA_INVITATION, 
                     reply_markup=reply_markup)
+
+        # Notify the inviter
+        context.bot.send_message(chat_id=user.chat_id,
+                text = responses.SM_INVITATION_SENT.format(invitee.first_name, invitee.display_name))
+
     
     # Location handler
     

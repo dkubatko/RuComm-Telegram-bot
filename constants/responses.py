@@ -103,7 +103,7 @@ SM_INVITATION_ARGS = "Not enough arguments for /sm_invite [id]"
 SM_INVITATION_USER_NOT_FOUND = "User with id {0} not found"
 SM_INVITATION_ALREADY_MEMBER = "This user is already a member of the SRM!"
 SM_INVITATION_EXPIRED = "You took too long to accept the invitation.\nApologize to the don and you might get another chance☝"
-
+SM_INVITATION_SENT = "{0}(@{1}) has been notified with an invitation to the SRM!"
 SM_INVITATION_ACCEPTED = '''
 <i>Well, well don {0}.</i>
 
