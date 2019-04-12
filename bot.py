@@ -767,7 +767,7 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_INVITATION_ARGS)
             return
         
-        new_member_id = context.args.get(0)
+        new_member_id = context.args[0]
 
         invitee = self.db_driver.get_user(new_member_id)
 
