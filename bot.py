@@ -636,7 +636,7 @@ class RusMafiaBot:
             user.fields['state'] = 'sm_nickname'
             self.db_driver.update_user(user)
 
-            self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.username, user.id))
+            self.logger.info(logging_settings.SM_NEW_MEMBER.format(user.display_name, user.id))
 
             context.bot.send_message(chat_id = user.chat_id, 
                     text = responses.SM_INVITATION_ACCEPTED,
@@ -657,7 +657,7 @@ class RusMafiaBot:
             user.fields['state'] = None
             self.db_driver.update_user(user)
 
-            self.logger.info(logging_settings.SM_DECLINED.format(user.username, user.id))
+            self.logger.info(logging_settings.SM_DECLINED.format(user.display_name, user.id))
 
             context.bot.send_message(chat_id = user.chat_id, text = responses.SM_INVITATION_DECLINED)
         except Exception as e:
