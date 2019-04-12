@@ -383,7 +383,8 @@ class RusMafiaBot:
         context.bot.send_message(chat_id=update.message.chat_id, text = responses.COMMAND_CANCELED)
         
     def sm_member_nickname(self, update, context, user):
-        nickname = update.message.text
+        # limit by 20 symbols
+        nickname = update.message.text[:20]
         user.fields['sm_nickname'] = nickname
         user.fields['state'] = None
         self.db_driver.update_user(user)
@@ -848,8 +849,7 @@ class RusMafiaBot:
                 context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
                 return
             
-            # limit by 20 symbols
-            message = ' '.join(context.args)[:20]
+            message = ' '.join(context.args)
 
             self.sm_member_message(context, user, message)
 
