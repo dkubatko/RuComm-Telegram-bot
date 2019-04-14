@@ -70,3 +70,5 @@ SM_NEW_MEMBER_NOTIFIED = "All SRM members notified about new member <{0}>"
 USER_NAME_UPDATED = "Update name of user <{0}> with id <{1}> to {2} {3}"
 
 SM_CHAT_NEW_MESSAGE = "User <{0}> with id <{1}> sent new message to the SRM chat"
+
+USER_REMOVE_EXCEPTION = "Exception: {0} when removing a user with id {1}"

@@ -513,8 +513,11 @@ class RusMafiaBot:
                 self.show_event(context, event, user, chat_id)
             # Because of the retarded way Telegram sends updates to the handler, this is the only way to catch blocked users
             except Unauthorized:
-                    self.logger.info(logging_settings.BOT_BLOCKED.format(user.display_name, user.id))
-                    self.db_driver.remove_user(user)
+                    try:
+                        self.logger.info(logging_settings.BOT_BLOCKED.format(user.display_name, user.id))
+                        self.db_driver.remove_user(user)
+                    except Exception as e:
+                        self.logger.info(logging_settings.USER_REMOVE_EXCEPTION.format(str(e), user.id))
 
             self.logger.info(logging_settings.EVENT_NOTIFY.format(user.display_name, user.id, event.name))
         
