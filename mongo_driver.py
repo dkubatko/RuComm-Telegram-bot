@@ -80,7 +80,7 @@ class MongoDriver:
     def remove_user(self, user: User):
         result = self.users.delete_one({u'id': user.id})
 
-        if result.matched_count > 0:
+        if result.deleted_count > 0:
             self.logger.info(logging_settings.DB_USER_DELETED.format(user.display_name, user.id))
         else:
             self.logger.info(logging_settings.DB_USER_NOT_FOUND.format(user.id))
