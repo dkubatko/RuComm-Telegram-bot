@@ -140,3 +140,7 @@ SM_CHAT_MESSAGE = '''<b>S</b><b>R</b><b>M</b> [{0}]:
 <pre>{1}</pre>'''
 
 SM_MESSAGE_SENT = "SRM message sent!"
+
+ANNOUNCEMENT_SENT = "Announcement sent to {0} users!"
+
+ANNOUNCEMENT = "<b>{0}</b> sent an announcement:\n{1}"

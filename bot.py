@@ -38,6 +38,7 @@ class RusMafiaBot:
         command_location_handler = CommandHandler('location', self.command_grant_location)
         command_sm_invite = CommandHandler('sm_invite', self.command_sm_invite)
         command_sm_chat = CommandHandler('chat', self.command_sm_chat)
+        command_announcement = CommandHandler('announcement', self.command_announcement)
         # other handlers
         command_query_handler = CallbackQueryHandler(self.command_query_callback, pass_user_data=True)
         echo_handler = MessageHandler(Filters.text, self.message_default)
@@ -58,6 +59,7 @@ class RusMafiaBot:
         dispatcher.add_handler(command_location_handler)
         dispatcher.add_handler(command_sm_invite)
         dispatcher.add_handler(command_sm_chat)
+        dispatcher.add_handler(command_announcement)
 
     def setup_logging(self):
         self.logger = logging.getLogger('bot')
@@ -170,6 +172,26 @@ class RusMafiaBot:
         reply_markup = ReplyKeyboardRemove()
         context.bot.send_message(chat_id=update.message.chat_id, text = responses.COMMAND_CANCELED, reply_markup=reply_markup)
 
+    def command_announcement(self, update, context):
+        user_id = update.effective_user.id
+        user = self.db_driver.get_user(user_id)
+
+        if not user:
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+            return
+
+        if not (user.admin):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+            return
+        
+        announcement = ' '.join(context.args)
+
+        success = self.announcement(context, user, announcement)
+        
+        self.logger.info(logging_settings.NEW_ANNOUNCEMENT.format(user.display_name, user.id, announcement))
+
+        context.bot.send_message(chat_id=update.message.chat_id, text = responses.ANNOUNCEMENT_SENT.format(success))
+        
     def command_create_event(self, update, context):
         user_id = update.effective_user.id
         user = self.db_driver.get_user(user_id)
@@ -919,6 +941,25 @@ class RusMafiaBot:
                 except Unauthorized:
                     self.logger.info(logging_settings.BOT_BLOCKED.format(member.display_name, member.id))
                     self.db_driver.remove_user(member)
+
+    def announcement(self, context, sender: User, announcement):
+        users = self.db_driver.get_all_users()
+        
+        success = 0
+
+        for user in users:
+            if (user.id != sender.id):
+                try:
+                    context.bot.send_message(chat_id=user.chat_id,
+                    text = responses.ANNOUNCEMENT.format(sender.display_name, announcement),
+                    parse_mode = ParseMode.HTML)
+                    success += 1
+                except Unauthorized:
+                    self.logger.info(logging_settings.BOT_BLOCKED.format(user.display_name, user.id))
+                    self.db_driver.remove_user(user)
+
+        return success
+
     
     def sm_member_message(self, context, sender: User, message):
         users = self.db_driver.get_all_users()
