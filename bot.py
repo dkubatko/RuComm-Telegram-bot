@@ -143,10 +143,7 @@ class RusMafiaBot:
 
         if not user:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
-            return
-        
-        # Temp first/lastname updater
-        self.update_name(update, user)        
+            return    
         
         if (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.IS_ADMIN)
@@ -160,9 +157,6 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
-        
-        # Temp first/lastname updater
-        self.update_name(update, user)
         
         # Clear the state
         user.fields['state'] = None
@@ -199,9 +193,6 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
-        
-        # Temp first/lastname updater
-        self.update_name(update, user)
 
         if not (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
@@ -229,9 +220,6 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
         
-        # Temp first/lastname updater
-        self.update_name(update, user)
-        
         if (user.fields.get('state', None) is None):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.MESSAGE_RESPONSE)
             return
@@ -243,9 +231,6 @@ class RusMafiaBot:
 
     def handle_state(self, update, context, user):
         state = user.fields.get('state', None)
-
-        # Temp first/lastname updater
-        self.update_name(update, user)
 
         if (state == 'event_create_start'):
             self.create_event_start(update, context, user)
@@ -443,13 +428,6 @@ class RusMafiaBot:
         if not user:
             context.bot.send_message(chat_id=query.message.chat_id, text = responses.NOT_REGISTERED)
             return
-        
-        try:
-            # Temp first/lastname updater
-            self.update_name(update, user)
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
 
         action = query.data
 
@@ -768,9 +746,6 @@ class RusMafiaBot:
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
 
-        # Temp first/lastname updater
-        self.update_name(update, user)
-
         events = self.db_driver.get_ongoing_events()
 
         if not events:
@@ -802,9 +777,6 @@ class RusMafiaBot:
         if (user is None):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
             return
-
-        # Temp first/lastname updater
-        self.update_name(update, user)
 
         if not (user.admin):
             context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
@@ -855,38 +827,31 @@ class RusMafiaBot:
                 text = responses.SM_INVITATION_SENT.format(invitee.first_name, invitee.display_name))
 
     def command_sm_chat(self, update, context):
-        try:
-            user_id = update.effective_user.id
-            user = self.db_driver.get_user(user_id)
+        user_id = update.effective_user.id
+        user = self.db_driver.get_user(user_id)
 
-            if (user is None):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
-                return
+        if (user is None):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.NOT_REGISTERED)
+            return
 
-            # Temp first/lastname updater
-            self.update_name(update, user)
+        if not (user.fields.get('sm_member', False)):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
+            return
 
-            if not (user.fields.get('sm_member', False)):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.PERMISSION_ERROR)
-                return
+        if (not context.args):
+            context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
+            return
+        
+        message = ' '.join(context.args)
 
-            if (not context.args):
-                context.bot.send_message(chat_id=update.message.chat_id, text = responses.SM_MESSAGE_ARGS)
-                return
-            
-            message = ' '.join(context.args)
+        # Delete original message
+        context.bot.delete_message(chat_id=user.chat_id, 
+                message_id=update.message.message_id)
 
-            # Delete original message
-            context.bot.delete_message(chat_id=user.chat_id, 
-                    message_id=update.message.message_id)
+        # Replace with sent message
+        self.sm_member_message(context, user, message)
 
-            # Replace with sent message
-            self.sm_member_message(context, user, message)
-
-            self.logger.info(logging_settings.SM_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
-        except Exception as e:
-            print(e)
-            traceback.print_tb(e.__traceback__)
+        self.logger.info(logging_settings.SM_CHAT_NEW_MESSAGE.format(user.display_name, user.id))
         
         
 
