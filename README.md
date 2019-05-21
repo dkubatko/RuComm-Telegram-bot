@@ -1,13 +1,35 @@
 # Russian Mafia Telegram bot
+## What is RMTB?
+This is a telegram bot that is used to organize events and unite members of the local Russian-speaking community. However, the functionality that it provides allows for any group/community organization.
 
-!!! WIP !!!
+## Features
 
-## In order to make things work you'll need:
+1. User features
+ - New member notifications
+ - Event notifications
+- Voluntary attendance tracking
+- Google Calendar sync
+- One-click access to the event's location
+- Anonymous attendees count
 
-1. Telegram bot token
+2. Admin features
+- In-bot event creation, with:
+  - Title
+  - Date/Time
+  - Location
+  - Description
+  - (Auto-generated) Google calendar link
+- Event enable/disable
+- Event attendee list
+- Announcements to all members
+- Admin chat (know as "secret mafia")
 
-2. Google maps api key
+## What do you need to run the bot:
 
-3. credentials.json for the calendar api
+1. Telegram token for your bot
 
-4. Mongodb atlas connection string
+2. Google maps API key
+
+3. credentials.json from Google Calendar API
+
+4. MongoDB connection string
