@@ -1,6 +1,6 @@
-# Russian Mafia Telegram bot
-## What is RMTB?
-This is a telegram bot that is used to organize events and unite members of the local Russian-speaking community. However, the functionality that it provides allows for any group/community organization.
+# Russian Community Telegram bot
+## What is RuComm TG bot?
+RuComm TG bot helps organize events and unite members of the local Russian-speaking community. In addition, its functionality can help manage any kind of community or organization.
 
 ## Features
 
@@ -26,10 +26,12 @@ This is a telegram bot that is used to organize events and unite members of the 
 
 ## What do you need to run the bot:
 
-1. Telegram token for your bot
+1. Telegram bot token
 
 2. Google maps API key
 
-3. credentials.json from Google Calendar API
+3. credentials for the Google Calendar API
 
-4. MongoDB connection string
+4. MongoDB credentials
+
+`source venv/bin/activate && python bot.py -h`
