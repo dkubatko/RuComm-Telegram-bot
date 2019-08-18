@@ -15,7 +15,7 @@ from telegram.error import TelegramError
 from google_calendar import GoogleCalendarAPI
 import traceback
 
-class RusMafiaBot:
+class RusCommBot:
     def __init__(self, token):
         self.token = token
         self.setup_logging()
@@ -957,7 +957,7 @@ class RusMafiaBot:
 
 if __name__ == "__main__":
     try:
-        RusMafiaBot(settings.token).start(clean=True)
+        RusCommBot(settings.token).start(clean=True)
     except Exception as e:
             print(e)
             traceback.print_tb(e.__traceback__)
